@@ -86,7 +86,13 @@ class ExtractionPluginManager(PluginManager.PluginManager):
                 if current_category is not None:
                     if not (candidate_infofile in self._category_file_mapping[current_category]):
                         # we found a new plugin: initialise it and search for the next one
-                        plugin_info.plugin_object = element(**self.json_config.get(current_category, {}).get(plugin_info.name, {}))
+                        plugin_constructer_args = self.json_config.get(current_category, {}).get(plugin_info.name, {})
+                        if isinstance(plugin_constructer_args, list):
+                            plugin_info.plugin_object = element(*plugin_constructer_args)
+                        elif isinstance(plugin_constructer_args, dict):
+                            plugin_info.plugin_object = element(**plugin_constructer_args)
+                        else:
+                            plugin_info.plugin_object = element()
                         plugin_info.category = current_category
                         self.category_mapping[current_category].append(plugin_info)
                         self._category_file_mapping[current_category].append(candidate_infofile)
