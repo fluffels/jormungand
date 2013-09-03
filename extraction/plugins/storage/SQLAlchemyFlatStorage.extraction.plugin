@@ -1,0 +1,9 @@
+[Core]
+Name = SQLAlchemy Flat Storage
+Module = SQLAlchemyFlatStorage
+
+[Documentation]
+Description = Stores extracted data in a table using SQLAlchemy
+Author = Adam Jorgensen (aj@springlab.co)
+Version = 0.1
+Website = http://springlab.co
