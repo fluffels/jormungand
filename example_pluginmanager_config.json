@@ -24,5 +24,6 @@
         "PostProcessing": {},
         "Validation": {},
         "Storage": {}
-    }
+    },
+    "excluded_plugins": ["Name of excluded plugin A", "Name of excluded plugin B"]
 }

@@ -50,6 +50,8 @@ class ExtractionPluginManager(PluginManager.PluginManager):
             raise ValueError("locatePlugins must be called before loadPlugins")
 
         for candidate_infofile, candidate_filepath, plugin_info in self._candidates:
+            if plugin_info.name in self.json_config.get('excluded_plugins', []):
+                continue
             # if a callback exists, call it before attempting to load
             # the plugin so that a message can be displayed to the
             # user
