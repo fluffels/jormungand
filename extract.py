@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
-from yapsy.PluginManager import PluginManager
 from extraction.api import *
+from extraction import ExtractionPluginManager
 import copy
 import os
 import logging
@@ -8,20 +8,13 @@ import logging
 __author__ = 'aj@springlab.co'
 
 
-def extract(plugin_roots=[], input_files=[], input_directories=[], logging=logging):
+def extract(json_config_file=None, plugin_roots=[], input_files=[], input_directories=[], logging=logging):
     """ Entry-point into the Extraction Process """
     #TODO: Refactor into separate functions or, possibly, a class in the extraction module
     # Init Plugin Manager and Plugins
-    logging.info('Initialising Plugin Manager')
-    plugin_manager = PluginManager()
-    plugin_manager.setPluginPlaces([os.path.abspath(plugin_root) for plugin_root in plugin_roots])
-    plugin_manager.setCategoriesFilter({
-        'DataModel': DataModelPluginInterface,
-        'Extraction': ExtractionPluginInterface,
-        'PostProcessing': PostProcessingPluginInterface,
-        'Validation': ValidationPluginInterface,
-        'Storage': StoragePluginInterface
-    })
+    logging.info('Initialising Extraction Plugin Manager')
+    plugin_manager = ExtractionPluginManager(json_config_file)
+    plugin_manager.extendPluginPlaces([os.path.abspath(plugin_root) for plugin_root in plugin_roots])
     plugin_manager.collectPlugins()
     for plugin_info in plugin_manager.getAllPlugins():
         plugin_manager.activatePluginByName(plugin_info.name)
@@ -83,6 +76,7 @@ def extract(plugin_roots=[], input_files=[], input_directories=[], logging=loggi
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='Extract data from input files into a datastore')
+    parser.add_argument('-c', '--config', default=None)
     parser.add_argument('-p', '--pluginroots', dest='plugin_roots', default=[], nargs='*', )
     parser.add_argument('-f', '--inputfiles', dest='input_files', default=[], nargs='*')
     parser.add_argument('-d', '--inputdirectories', dest='input_directories', default=[], nargs='*')
@@ -92,5 +86,5 @@ if __name__ == '__main__':
     logging.basicConfig()
     logging = logging.getLogger('EXTRACT')
     logging.setLevel(args.loglevel)
-    extract(args.plugin_roots, args.input_files, args.input_directories, logging)
+    extract(args.config, args.plugin_roots, args.input_files, args.input_directories, logging)
 
