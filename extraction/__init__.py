@@ -64,7 +64,8 @@ class ExtractionPluginManager(PluginManager.PluginManager):
                 sys.path.append(plugin_info.path)
             try:
                 candidateMainFile = open(candidate_filepath + ".py", "r")
-                exec (candidateMainFile, candidate_globals)
+                exec candidateMainFile in candidate_globals
+                # exec (candidateMainFile, candidate_globals)
             except Exception, e:
                 logging.debug("Unable to execute the code in plugin: %s" % candidate_filepath)
                 logging.debug("\t The following problem occured: %s %s " % (os.linesep, e))
@@ -111,7 +112,3 @@ class ExtractionPluginManager(PluginManager.PluginManager):
             plugin_names = self.json_config.get('plugin_order', {}).get(category_name, [])
             plugin_rankings = {plugin_name: plugin_ranking for plugin_name, plugin_ranking in zip(plugin_names, range(0, len(plugin_names)))}
             plugin_infos.sort(key=lambda plugin_info: plugin_rankings.get(plugin_info.name, len(plugin_names)+1))
-
-
-
-
