@@ -1,1 +1,1 @@
-__author__ = 'adamj'
+__author__ = 'aj@springlab.co'
