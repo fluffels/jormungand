@@ -1,10 +1,10 @@
 from contextlib import contextmanager
 from datetime import datetime
 from extraction.api import StoragePluginInterface
+from json import dumps
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, String, Integer, DateTime, BLOB, create_engine
-import json
+from sqlalchemy import Column, String, Integer, DateTime, Binary, create_engine, func
 
 __author__ = 'aj@spinglab.co'
 
@@ -14,15 +14,22 @@ RecordBase = declarative_base()
 class StorageRecord(RecordBase):
     __tablename__ = 'storage'
 
-    datamodel = Column(String)
-    datamodel_name = Column(String, primary_key=True)
+    data_model = Column(String)
+    data_model_name = Column(String, primary_key=True)
     uid = Column(String, primary_key=True)
-    version = Column(Integer, primary_key=True)
+    version = Column(Integer, primary_key=True, autoincrement=False)
     created = Column(DateTime, default=datetime.now)
-    data_item = Column(BLOB)
+    data_item = Column(Binary)
+    data_item_metadata = Column(Binary)
 
 
 class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
+    """
+    The SQLAlchemyFlatJSONStoragePlugin provides a means of storing generic data in a database using SQLAlchemy.
+
+    Data is converted to JSON format and stored in BLOBs, along with additional useful information that should
+    allow for the stored data to be re-used and accessed easily enough.
+    """
 
     def __init__(self, rdbms_url='sqlite:///SQLAlchemyFlatStoragePlugin.db'):
         # Init SQLAlchemy
@@ -48,6 +55,19 @@ class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
         return True
 
     def store(self, data_items, data_model_name, data_model):
+        with self.session_scope() as session:
+            data_model = dumps(data_model)
+            current_versions = {
+                uid: version for uid, version in session
+                    .query(StorageRecord.uid, func.max(StorageRecord.version))
+                    .filter(StorageRecord.data_model_name == data_model_name)
+                    .group_by(StorageRecord.uid)
+            }
+            for uid, data_item in data_items.items():
+                uid = dumps(uid)
+                session.add(StorageRecord(data_model=data_model, data_model_name=data_model_name, uid=uid,
+                                          version=current_versions.get(uid, 0) + 1, data_item=dumps(data_item),
+                                          data_item_metadata=dumps(vars(data_item))))
         return super(SQLAlchemyFlatJSONStoragePlugin, self).store(data_items, data_model_name, data_model)
 
 
