@@ -1,8 +1,8 @@
 from argparse import ArgumentParser
+from copy import deepcopy
 import sys
 from extraction.api import *
 from extraction import ExtractionPluginManager
-import copy
 import os
 import logging
 
@@ -46,7 +46,7 @@ def extract(json_config_file=None, plugin_roots=[], input_files=[], input_direct
                 if plugin.can_extract(input_file, data_model_name, data_model):
                     logging.info('Extracting data from %s using Data Model %s and Extraction plugin %s ' % (input_file, data_model_name, plugin))
                     extracted_data[data_model_name].update(
-                        plugin.extract(input_file, data_model_name, data_model, copy.deepcopy(data_templates[data_model_name])))
+                        plugin.extract(input_file, data_model_name, data_model, deepcopy(data_templates[data_model_name])))
     # Post-Process
     logging.info('Post-Processing Extracted Data')
     for plugin_info in plugin_manager.getPluginsOfCategory('PostProcessing'):
