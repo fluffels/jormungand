@@ -1,5 +1,5 @@
 from yapsy import IPlugin
-from extraction.api.postprocessing import PostProcessedDataItem
+from postprocessing import PostProcessedDataItem
 
 __author__ = 'aj@springlab.co'
 
