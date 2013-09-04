@@ -50,8 +50,6 @@ class ExtractionPluginManager(PluginManager.PluginManager):
             raise ValueError("locatePlugins must be called before loadPlugins")
 
         for candidate_infofile, candidate_filepath, plugin_info in self._candidates:
-            if plugin_info.name in self.json_config.get('excluded_plugins', []):
-                continue
             # if a callback exists, call it before attempting to load
             # the plugin so that a message can be displayed to the
             # user
@@ -88,6 +86,8 @@ class ExtractionPluginManager(PluginManager.PluginManager):
                             current_category = category_name
                             break
                 if current_category is not None:
+                    if plugin_info.name in self.json_config.get('excluded_plugins', {}).get(current_category, []):
+                        break
                     if not (candidate_infofile in self._category_file_mapping[current_category]):
                         # we found a new plugin: initialise it and search for the next one
                         plugin_constructer_args = self.json_config.get(current_category, {}).get(plugin_info.name, {})
