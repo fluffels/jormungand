@@ -14,11 +14,12 @@ RecordBase = declarative_base()
 class StorageRecord(RecordBase):
     __tablename__ = 'storage'
 
-    datamodel = Column(String, primary_key=True)
+    datamodel = Column(String)
+    datamodel_name = Column(String, primary_key=True)
     uid = Column(String, primary_key=True)
     version = Column(Integer, primary_key=True)
     created = Column(DateTime, default=datetime.now)
-    data = Column(BLOB)
+    data_item = Column(BLOB)
 
 
 class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
