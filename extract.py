@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import sys
 from extraction.api import *
 from extraction import ExtractionPluginManager
 import copy
@@ -75,6 +76,9 @@ def extract(json_config_file=None, plugin_roots=[], input_files=[], input_direct
 
 
 if __name__ == '__main__':
+    # Ensure directory of extraction script is on the path
+    sys.path.append(os.path.dirname(__file__))
+    # Configure CLI parser
     parser = ArgumentParser(description='Extract data from input files into a datastore')
     parser.add_argument('-c', '--config', default=None)
     parser.add_argument('-p', '--pluginroots', dest='plugin_roots', default=[], nargs='*', )
