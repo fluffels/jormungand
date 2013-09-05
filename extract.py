@@ -53,18 +53,16 @@ def extract(json_config_file=None, plugin_roots=[], input_files=[], input_direct
         plugin = plugin_info.plugin_object
         for data_model_name, data_model in data_models.items():
             if plugin.can_process(data_model_name, data_model):
-                for data_item_key, data_item in extracted_data[data_model_name].items():
-                    logging.info('Post-Processing item %s of Data Model %s using Post-Processing plugin %s' % (data_item_key, data_model_name, plugin))
-                    extracted_data[data_model_name][data_item_key] = plugin.process(data_item, data_model_name. data_model)
+                logging.info('Post-Processing Data Model %s using Post-Processing plugin %s' % (data_model_name, plugin))
+                extracted_data[data_model_name] = plugin.process(extracted_data[data_model_name], data_model_name. data_model)
     # Validation
     logging.info('Validating Extracted Data')
     for plugin_info in plugin_manager.getPluginsOfCategory('Validation'):
         plugin = plugin_info.plugin_object
         for data_model_name, data_model in data_models.items():
             if plugin.can_validate(data_model_name, data_model):
-                for data_item_key, data_item in extracted_data[data_model_name].items():
-                    logging.info('Validating item %s of Data Model %s using Validation plugin %s' % (data_item_key, data_model_name, plugin))
-                    extracted_data[data_model_name][data_item_key] = plugin.validate(data_item, data_model_name. data_model)
+                logging.info('Validating Data Model %s using Validation plugin %s' % (data_model_name, plugin))
+                extracted_data[data_model_name] = plugin.validate(extracted_data[data_model_name], data_model_name. data_model)
     # Storage
     logging.info('Storing Extracted Data')
     for plugin_info in plugin_manager.getPluginsOfCategory('Storage'):
