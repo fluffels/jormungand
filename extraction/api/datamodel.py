@@ -4,19 +4,44 @@ __author__ = 'aj@springlab.co'
 
 
 class FieldDefinition(object):
+    """
+    Defines a class that is used to provide basic definitions of fields on a Data Model.
+    """
 
     def __init__(self, type=str, default_value=None, required=False, unique=False):
         self.type = type
         self.default_value = default_value
         self.required = required
+        self.unique = unique
 
 
 class DataModelPluginInterface(IPlugin.IPlugin):
+    """
+    Defines an interface for plugins that define data models. Data Models are used to unify the flow of data within
+    the plugin-based Extraction system, allowing plugins to easily determine what data they can and can not process.
+
+    Data Models are also used to generated template dict instances of the data associated with a Data Model and provide
+    simple information about the fields associated with the Data Model that can be used by other plugins produced
+    output data that complies on a basic level with the strictures of the Data Model.
+    """
 
     def get_data_model_name(self):
+        """
+        Returns the name of the Data Model. Should be unique.
+        """
         return 'modelname'
 
     def get_data_model(self):
+        """
+        Returns the Data Model. The Data Model is a dict mapping field name -> FieldDefinition instance.
+
+        Fields within the Data Model that map to multiple values can be indicated by
+        mapping field name -> array containing a FieldDefinition instance.
+
+        Fields within the Dat Model that map to multiple objects can be indicated by
+        mapping field name -> array containing a dict. The data within this dict must
+        conform to the previous rules.
+        """
         return {
             'key_field': FieldDefinition(unique=True),
             'int_field': FieldDefinition(int, required=False),
@@ -32,7 +57,12 @@ class DataModelPluginInterface(IPlugin.IPlugin):
         }
 
     def get_data_template(self):
-        """ Generate a template dictionary object """
+        """
+        Uses the Data Model to generate a template dict instance of the Data Model.
+
+        This template dict instance can be copied using copy.deepcopy to provide a dict instance that merely needs
+        to be "filled in" with values in order to produce a valid instance of the Data Model.
+        """
         def generate_data_template(data_model):
             template = {}
             for field, field_definition in data_model.items():
