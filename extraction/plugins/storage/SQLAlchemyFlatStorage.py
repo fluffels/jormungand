@@ -1,8 +1,9 @@
 from contextlib import contextmanager
 from datetime import datetime
 from extraction.api import StoragePluginInterface
+from extraction.api.datamodel import FieldDefinition
 from hashlib import md5
-from json import dumps
+from json import dumps, JSONEncoder
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, String, Integer, DateTime, Binary, create_engine, func
@@ -13,6 +14,9 @@ RecordBase = declarative_base()
 
 
 class StorageRecord(RecordBase):
+    """
+    SQLALchemy Record class defining the structure of the table used to store Extracted data
+    """
     __tablename__ = 'storage'
 
     data_model = Column(String)
@@ -23,6 +27,23 @@ class StorageRecord(RecordBase):
     data_item = Column(Binary)
     data_item_metadata = Column(Binary)
     checksum = Column(String(length=32))
+
+
+class SQLAlchemyFlatJSONEncoder(JSONEncoder):
+    """
+    A custom JSONEncoder that is capable of handling the FieldDefintion classes included within the Data Model
+    """
+    def default(self, o):
+        if isinstance(o, FieldDefinition):
+            return {
+                '__class__': '%s.%s' % (FieldDefinition.__module__, FieldDefinition.__name__),
+                'type': '%s.%s' % (o.type.__module__, o.type.__name__),
+                'default_value': o.type() if not callable(o.default_value) else str(o.default_value()),
+                'required': o.required,
+                'unique': o.unique
+
+            }
+        return super(SQLAlchemyFlatJSONEncoder, self).default(o)
 
 
 class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
@@ -58,7 +79,7 @@ class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
 
     def store(self, data_items, data_model_name, data_model):
         with self.session_scope() as session:
-            data_model = dumps(data_model)
+            data_model = dumps(data_model, cls=SQLAlchemyFlatJSONEncoder)
             current_versions = {
                 uid: (version, checksum) for uid, version, checksum in session
                     .query(StorageRecord.uid, func.max(StorageRecord.version), StorageRecord.checksum)
@@ -66,7 +87,8 @@ class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
                     .group_by(StorageRecord.uid)
             }
             for uid, data_item in data_items.items():
-                uid, data_item, data_item_metadata = [dumps(item) for item in (uid, data_item, vars(data_item))]
+                uid, data_item, data_item_metadata = \
+                    [dumps(item) for item in (uid, data_item, vars(data_item))]
                 checksum = md5('#'.join([data_model, data_item, data_item_metadata])).hexdigest()
                 current_version, current_version_checksum = current_versions.get(uid, (0, None))
                 if checksum == current_version_checksum:
