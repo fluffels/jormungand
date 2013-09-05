@@ -28,7 +28,7 @@ class ExtractionPluginInterface(IPlugin.IPlugin):
         """
         return False
 
-    def extract(self, source, data_model_name, data_model, data_template):
+    def extract(self, source, data_model_name, data_model, data_item_template):
         """
         Extract data from a given combination of source and data model.
 
