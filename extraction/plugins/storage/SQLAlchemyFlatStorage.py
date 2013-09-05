@@ -38,11 +38,14 @@ class SQLAlchemyFlatJSONEncoder(JSONEncoder):
             return {
                 '__class__': '%s.%s' % (FieldDefinition.__module__, FieldDefinition.__name__),
                 'type': '%s.%s' % (o.type.__module__, o.type.__name__),
+                #TODO: Does not work for datetime.datetime, etc
                 'default_value': o.type() if not callable(o.default_value) else str(o.default_value()),
                 'required': o.required,
                 'unique': o.unique
 
             }
+        if isinstance(o, datetime):
+            return o.isoformat()
         return super(SQLAlchemyFlatJSONEncoder, self).default(o)
 
 
@@ -54,9 +57,10 @@ class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
     allow for the stored data to be re-used and accessed easily enough.
     """
 
-    def __init__(self, rdbms_url='sqlite:///SQLAlchemyFlatStoragePlugin.db'):
+    def __init__(self, rdbms_url='sqlite:///SQLAlchemyFlatStoragePlugin.db', sqlalchemy_loglevel=None):
         # Init SQLAlchemy
         self.engine = create_engine(rdbms_url)
+        #TODO: Implement SQLAlchemy logging
         self.session_class = sessionmaker(self.engine)
         RecordBase.metadata.create_all(self.engine)
         # Define ContextManager
@@ -80,21 +84,26 @@ class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
     def store(self, data_items, data_model_name, data_model):
         with self.session_scope() as session:
             data_model = dumps(data_model, cls=SQLAlchemyFlatJSONEncoder)
+            uid_version_checksums = {
+                (uid, version): checksum for uid, version, checksum in session
+                    .query(StorageRecord.uid, StorageRecord.version, StorageRecord.checksum)
+                    .filter(StorageRecord.data_model_name == data_model_name)
+            }
             current_versions = {
-                uid: (version, checksum) for uid, version, checksum in session
-                    .query(StorageRecord.uid, func.max(StorageRecord.version), StorageRecord.checksum)
+                uid: (version, uid_version_checksums.get((uid, version))) for uid, version in session
+                    .query(StorageRecord.uid, func.max(StorageRecord.version))
                     .filter(StorageRecord.data_model_name == data_model_name)
                     .group_by(StorageRecord.uid)
             }
             for uid, data_item in data_items.items():
                 uid, data_item, data_item_metadata = \
-                    [dumps(item) for item in (uid, data_item, vars(data_item))]
+                    [dumps(item, cls=SQLAlchemyFlatJSONEncoder) for item in (uid, data_item, vars(data_item))]
                 checksum = md5('#'.join([data_model, data_item, data_item_metadata])).hexdigest()
                 current_version, current_version_checksum = current_versions.get(uid, (0, None))
                 if checksum == current_version_checksum:
                     continue
                 session.add(StorageRecord(data_model=data_model, data_model_name=data_model_name, uid=uid,
-                                          version=current_versions + 1, data_item=data_item, checksum=checksum,
+                                          version=current_version + 1, data_item=data_item, checksum=checksum,
                                           data_item_metadata=data_item_metadata))
         return super(SQLAlchemyFlatJSONStoragePlugin, self).store(data_items, data_model_name, data_model)
 
