@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from datetime import datetime
 from extraction.api import StoragePluginInterface
+from hashlib import md5
 from json import dumps
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -21,6 +22,7 @@ class StorageRecord(RecordBase):
     created = Column(DateTime, default=datetime.now)
     data_item = Column(Binary)
     data_item_metadata = Column(Binary)
+    checksum = Column(String(length=32))
 
 
 class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
@@ -58,16 +60,20 @@ class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
         with self.session_scope() as session:
             data_model = dumps(data_model)
             current_versions = {
-                uid: version for uid, version in session
-                    .query(StorageRecord.uid, func.max(StorageRecord.version))
+                uid: (version, checksum) for uid, version, checksum in session
+                    .query(StorageRecord.uid, func.max(StorageRecord.version), StorageRecord.checksum)
                     .filter(StorageRecord.data_model_name == data_model_name)
                     .group_by(StorageRecord.uid)
             }
             for uid, data_item in data_items.items():
-                uid = dumps(uid)
+                uid, data_item, data_item_metadata = [dumps(item) for item in (uid, data_item, vars(data_item))]
+                checksum = md5('#'.join([data_model, data_item, data_item_metadata])).hexdigest()
+                current_version, current_version_checksum = current_versions.get(uid, (0, None))
+                if checksum == current_version_checksum:
+                    continue
                 session.add(StorageRecord(data_model=data_model, data_model_name=data_model_name, uid=uid,
-                                          version=current_versions.get(uid, 0) + 1, data_item=dumps(data_item),
-                                          data_item_metadata=dumps(vars(data_item))))
+                                          version=current_versions + 1, data_item=data_item, checksum=checksum,
+                                          data_item_metadata=data_item_metadata))
         return super(SQLAlchemyFlatJSONStoragePlugin, self).store(data_items, data_model_name, data_model)
 
 
