@@ -108,7 +108,7 @@ class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
                     .filter(StorageRecord.data_model_name == data_model_name)
                     .group_by(StorageRecord.uid)
             }
-            for uid, data_item in data_items.items():
+            for uid, data_item in data_items:
                 uid, data_item, data_item_metadata = \
                     [dumps(item, cls=SQLAlchemyFlatJSONEncoder) for item in (uid, data_item, vars(data_item))]
                 checksum = md5('#'.join([data_model, data_item, data_item_metadata])).hexdigest()
