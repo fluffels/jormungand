@@ -15,6 +15,34 @@ class FieldDefinition(object):
         self.unique = unique
 
 
+def generate_field_value(field_definition):
+    """
+    Given a FieldDefinition instance, attempts to generate a value for it based on its .default_value and .type attrs
+    """
+    try:
+        if isinstance(field_definition.default_value, field_definition.type):
+            return field_definition.default_value
+        return field_definition.type()
+    finally:
+        return None
+
+
+def generate_data_template(data_model):
+    """
+    Given a list of (field, FieldDefinition/list/dict) tuples Data Model dictionary,
+    attempts to generate a template data dict.
+    """
+    template = {}
+    for field, field_definition in data_model:
+        if isinstance(field_definition, FieldDefinition):
+            template[field] = generate_field_value(field_definition)
+        elif isinstance(field_definition, list):
+            template[field] = [generate_field_value(field_definition) for field_definition in field_definition]
+        elif isinstance(field_definition, dict):
+            template[field] = generate_data_template(field_definition.items())
+    return template
+
+
 class DataModelPluginInterface(IPlugin.IPlugin):
     """
     Defines an interface for plugins that define data models. Data Models are used to unify the flow of data within
@@ -63,24 +91,6 @@ class DataModelPluginInterface(IPlugin.IPlugin):
         This template dict instance can be copied using copy.deepcopy to provide a dict instance that merely needs
         to be "filled in" with values in order to produce a valid instance of the Data Model.
         """
-        def generate_field_value(field_definition):
-            try:
-                if isinstance(field_definition.default_value, field_definition.type):
-                    return field_definition.default_value
-                return field_definition.type()
-            finally:
-                return None
-
-        def generate_data_template(data_model):
-            template = {}
-            for field, field_definition in data_model.items():
-                if isinstance(field_definition, FieldDefinition):
-                    template[field] = generate_field_value(field_definition)
-                elif isinstance(field_definition, list):
-                    template[field] = [generate_field_value(field_definition) for field_definition in field_definition]
-                elif isinstance(field_definition, dict):
-                    template[field] = generate_data_template(field_definition)
-            return template
-        return generate_data_template(self.get_data_model())
+        return generate_data_template(self.get_data_model().items())
 
 
