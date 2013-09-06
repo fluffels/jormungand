@@ -26,10 +26,10 @@ class PostProcessingPluginInterface(IPlugin.IPlugin):
 
     def process(self, data_items, data_model_name, data_model):
         """
-        For a given data model, processes a dict mapping UID value -> ExtractedDataItem instance and transforms each
+        For a given data model, processes a list of (UID value, ExtractedDataItem instance) tuples and transforms each
         ExtractedDataItem instance into a PostProcessedDataItem instance.
 
-        Returns a dict mapping UID value -> PostProcessedDataItem instance.
+        Returns a list of (UID value, PostProcessedDataItem instance) tuples.
         """
-        return {}
+        return []
 

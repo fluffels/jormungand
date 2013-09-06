@@ -27,9 +27,9 @@ class ValidationPluginInterface(IPlugin.IPlugin):
 
     def validate(self, data_items, data_model_name, data_model):
         """
-        For a given data model, processes a dict mapping UID value -> ExtractedDataItem instance and validates
+        For a given data model, processes a list of (UID value, ExtractedDataItem instance) tuples and validates
         each ExtractedDataItem instance, transforming it into a ValidatedDataItem instance in the process.
 
-        Returns a dict mapping UID value -> ValidatedDataItem instance
+        Returns a list of (UID value, ValidatedDataItem instance) tuples.
         """
-        return {}
+        return []

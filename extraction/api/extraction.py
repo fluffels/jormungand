@@ -32,7 +32,7 @@ class ExtractionPluginInterface(IPlugin.IPlugin):
         """
         Extract data from a given combination of source and data model.
 
-        Returns a dict mapping UID value -> ExtractedDataItem instance
+        Returns a list of (UID value, ExtractedDataItem instance) tuples
         """
-        return {}
+        return []
 
