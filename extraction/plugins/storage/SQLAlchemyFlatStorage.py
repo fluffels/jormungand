@@ -1,12 +1,13 @@
 from contextlib import contextmanager
 from datetime import datetime
 from extraction.api import StoragePluginInterface
-from extraction.api.datamodel import FieldDefinition
+from extraction.api.datamodel import FieldDefinition, generate_field_value
 from hashlib import md5
 from json import dumps, JSONEncoder
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, String, Integer, DateTime, Binary, create_engine, func
+import logging
 
 __author__ = 'aj@spinglab.co'
 
@@ -31,15 +32,26 @@ class StorageRecord(RecordBase):
 
 class SQLAlchemyFlatJSONEncoder(JSONEncoder):
     """
-    A custom JSONEncoder that is capable of handling the FieldDefintion classes included within the Data Model
+    A custom JSONEncoder that is capable of handling the FieldDefinition classes included within the Data Model
     """
+
+    def __init__(self, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False,
+                 indent=4, separators=(',', ':'), encoding='utf-8', default=None):
+        """
+        Init is overridden to specify indent
+        """
+        super(SQLAlchemyFlatJSONEncoder, self).__init__(skipkeys, ensure_ascii, check_circular, allow_nan, sort_keys,
+                                                        indent, separators, encoding, default)
+
     def default(self, o):
+        """
+        Custom default implementation that handles FieldDefinition and datetime instances
+        """
         if isinstance(o, FieldDefinition):
             return {
                 '__class__': '%s.%s' % (FieldDefinition.__module__, FieldDefinition.__name__),
                 'type': '%s.%s' % (o.type.__module__, o.type.__name__),
-                #TODO: Does not work for datetime.datetime, etc
-                'default_value': o.type() if not callable(o.default_value) else str(o.default_value()),
+                'default_value': generate_field_value(o),
                 'required': o.required,
                 'unique': o.unique
 
@@ -60,7 +72,8 @@ class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
     def __init__(self, rdbms_url='sqlite:///SQLAlchemyFlatStoragePlugin.db', sqlalchemy_loglevel=None):
         # Init SQLAlchemy
         self.engine = create_engine(rdbms_url)
-        #TODO: Implement SQLAlchemy logging
+        if sqlalchemy_loglevel:
+            logging.getLogger('sqlalchemy.engine').setLevel(sqlalchemy_loglevel)
         self.session_class = sessionmaker(self.engine)
         RecordBase.metadata.create_all(self.engine)
         # Define ContextManager
