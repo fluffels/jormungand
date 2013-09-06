@@ -115,6 +115,7 @@ class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
                 current_version, current_version_checksum = current_versions.get(uid, (0, None))
                 if checksum == current_version_checksum:
                     continue
+                current_versions[uid] = (current_version + 1, checksum)
                 session.add(StorageRecord(data_model=data_model, data_model_name=data_model_name, uid=uid,
                                           version=current_version + 1, data_item=data_item, checksum=checksum,
                                           data_item_metadata=data_item_metadata))
