@@ -38,14 +38,14 @@ def extract(json_config_file=None, plugin_roots=[], input_files=[], input_direct
     #TODO: A fair bit of repeated code here, refactor
     # Extract data from input files
     logging.info('Extracting data')
-    extracted_data = {data_model_name: {} for data_model_name in data_models}
+    extracted_data = {data_model_name: [] for data_model_name in data_models}
     for plugin_info in plugin_manager.getPluginsOfCategory('Extraction'):
         plugin = plugin_info.plugin_object
         for data_model_name, data_model in data_models.items():
             for input_file in input_files:
                 if plugin.can_extract(input_file, data_model_name, data_model):
                     logging.info('Extracting data from %s using Data Model %s and Extraction plugin %s ' % (input_file, data_model_name, plugin))
-                    extracted_data[data_model_name].update(
+                    extracted_data[data_model_name].extend(
                         plugin.extract(input_file, data_model_name, data_model, deepcopy(data_templates[data_model_name])))
     # Post-Process
     logging.info('Post-Processing Extracted Data')
