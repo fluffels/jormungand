@@ -1,4 +1,5 @@
 from yapsy import IPlugin
+from decorator import decorator
 from extraction import ExtractedDataItem
 
 __author__ = 'aj@springlab.co'
@@ -10,6 +11,8 @@ class PostProcessedDataItem(ExtractedDataItem):
     ExtractedDataItem instance has undergone post-processing.
     """
     def __init__(self, seq=None, **kwargs):
+        self.processed_by = []
+        self.processing_errors = []
         super(PostProcessedDataItem, self).__init__(seq, **kwargs)
 
 

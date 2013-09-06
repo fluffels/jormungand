@@ -10,8 +10,8 @@ class ValidatedDataItem(PostProcessedDataItem):
     PostProcessedDataItem instance has undergone validation
     """
     def __init__(self, seq=None, **kwargs):
-        super(ValidatedDataItem, self).__init__(seq, **kwargs)
         self.valid = False
+        super(ValidatedDataItem, self).__init__(seq, **kwargs)
 
 
 class ValidationPluginInterface(IPlugin.IPlugin):
