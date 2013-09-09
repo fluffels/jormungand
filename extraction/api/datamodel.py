@@ -39,7 +39,7 @@ def generate_data_template(data_model):
         elif isinstance(field_definition, list):
             template[field] = [generate_field_value(field_definition) for field_definition in field_definition]
         elif isinstance(field_definition, dict):
-            template[field] = generate_data_template(field_definition.items())
+            template[field] = [generate_data_template(field_definition.items())]
     return template
 
 
