@@ -10,7 +10,7 @@ class ValidatedDataItem(PostProcessedDataItem):
     PostProcessedDataItem instance has undergone validation
     """
     def __init__(self, seq=None, **kwargs):
-        self.valid = False
+        self.valid = True
         super(ValidatedDataItem, self).__init__(seq, **kwargs)
 
 
