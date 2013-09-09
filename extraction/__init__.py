@@ -90,7 +90,7 @@ class ExtractionPluginManager(PluginManager.PluginManager):
                         break
                     if not (candidate_infofile in self._category_file_mapping[current_category]):
                         # we found a new plugin: initialise it and search for the next one
-                        plugin_constructer_args = self.json_config.get(current_category, {}).get(plugin_info.name, {})
+                        plugin_constructer_args = self.json_config.get('plugin_config', {}).get(current_category, {}).get(plugin_info.name, {})
                         if isinstance(plugin_constructer_args, list):
                             plugin_info.plugin_object = element(*plugin_constructer_args)
                         elif isinstance(plugin_constructer_args, dict):
