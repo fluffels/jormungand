@@ -1,3 +1,4 @@
+import collections
 from yapsy import IPlugin
 
 __author__ = 'aj@springlab.co'
@@ -15,6 +16,27 @@ class ExtractedDataItem(dict):
         if isinstance(seq, ExtractedDataItem):
             for key, value in vars(seq).items():
                 setattr(self, key, value)
+
+    def update(self, E=None, **F):
+        """
+        Overrides the standard dict update method to support recursive updating.
+
+        Based on http://stackoverflow.com/a/14048316 with a modification to support updating of list values.
+        """
+        def update(d, u):
+            for k, v in u.iteritems():
+                if isinstance(v, collections.Mapping):
+                    r = update(d.get(k, {}), v)
+                    d[k] = r
+                elif isinstance(v, collections.MutableSequence):
+                    for i in xrange(0, len(v)):
+                        r = update(d[k][i], v[i])
+                        d[k][i] = r
+                else:
+                    d[k] = u[k]
+            return d
+        update(self, E)
+        update(self, F)
 
 
 class ExtractionPluginInterface(IPlugin.IPlugin):
