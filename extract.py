@@ -86,7 +86,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # Configure Logging
     logging.basicConfig()
-    logging = logging.getLogger('EXTRACT')
+    logging = logging.getLogger('EXTRACTION')
     logging.setLevel(args.loglevel)
     extract(args.config, args.plugin_roots, args.input_files, args.input_directories, logging)
 
