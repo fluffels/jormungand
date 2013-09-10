@@ -11,6 +11,8 @@ class ValidatedDataItem(PostProcessedDataItem):
     """
     def __init__(self, seq=None, **kwargs):
         self.valid = True
+        self.validation_errors = []
+        self.validated_by = []
         super(ValidatedDataItem, self).__init__(seq, **kwargs)
 
 
