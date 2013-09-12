@@ -28,6 +28,11 @@ class ExtractionPluginManager(PluginManager.PluginManager):
                  plugin_info_ext="extraction.plugin"):
         super(ExtractionPluginManager, self).__init__(categories_filter, directories_list, plugin_info_ext)
         self.json_config = json.load(open(os.path.abspath(json_config_file), 'rb')) if json_config_file else {}
+        if self.json_config.get('plugin_roots'):
+            for path in self.json_config.get('plugin_roots'):
+                if not path.startswith(os.sep):
+                    self.json_config['plugin_roots'].remove(path)
+                    self.json_config['plugin_roots'].append(os.sep.join([os.path.dirname(os.path.abspath(json_config_file)), path]))
         self.extendPluginPlaces(self.json_config.get('plugin_roots', []))
 
     def extendPluginPlaces(self, directories_list):
