@@ -49,6 +49,9 @@ class ExtractionPluginManager(PluginManager.PluginManager):
         if not hasattr(self, '_candidates'):
             raise ValueError("locatePlugins must be called before loadPlugins")
 
+        for path in self.plugins_places:
+            sys.path.append(path)
+
         for candidate_infofile, candidate_filepath, plugin_info in self._candidates:
             # if a callback exists, call it before attempting to load
             # the plugin so that a message can be displayed to the
