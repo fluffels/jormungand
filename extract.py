@@ -16,6 +16,7 @@ def extract(json_config_file=None, plugin_roots=[], input_files=[], input_direct
     logging.info('Initialising Extraction Plugin Manager')
     plugin_manager = ExtractionPluginManager(json_config_file)
     plugin_manager.extendPluginPlaces([os.path.abspath(plugin_root) for plugin_root in plugin_roots])
+    plugin_manager.extendPluginPlaces([os.path.join(os.path.dirname(__file__))])
     plugin_manager.collectPlugins()
     for plugin_info in plugin_manager.getAllPlugins():
         plugin_manager.activatePluginByName(plugin_info.name)

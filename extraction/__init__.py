@@ -29,7 +29,6 @@ class ExtractionPluginManager(PluginManager.PluginManager):
         super(ExtractionPluginManager, self).__init__(categories_filter, directories_list, plugin_info_ext)
         self.json_config = json.load(open(os.path.abspath(json_config_file), 'rb')) if json_config_file else {}
         self.extendPluginPlaces(self.json_config.get('plugin_roots', []))
-        self.extendPluginPlaces([os.path.join(os.path.dirname(__file__), 'plugins')])
 
     def extendPluginPlaces(self, directories_list):
         """ Extend the current list of plugin locations with new entries """
