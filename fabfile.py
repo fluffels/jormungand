@@ -25,11 +25,15 @@ def setup():
 
     # Install basic system packages
     sudo('apt-get install git')
-    sudo('apt-get install python-pip')
-    sudo('apt-get install python-virtualenv')
 
     with cd(env.working_dir):
-        run('virtualenv -p /usr/bin/python2.7 ENV_extraction')
-        run('ENV_extraction/bin/pip install Yapsy==1.9.2')
-        run('ENV_extraction/bin/pip install SQLAlchemy==0.8.2')
+        run('git clone https://github.com/OOPMan/extraction.git')
+
+
+def update():
+    """
+    """
+    with cd(env.working_dir):
+        with cd('extraction'):
+            run('git pull --rebase')
 
