@@ -43,7 +43,7 @@ def extract(json_config_file=None, plugin_roots=[], sources=[], logging=logging)
                 inputs.append(source)
         else:
             inputs.append(source)
-    logging.info('Finalized list of files to process: %s' % ', '.join(inputs))
+    logging.info('Finalized list of sources to process: %s' % ', '.join(inputs))
     #TODO: A fair bit of repeated code here, refactor
     # Extract data from input files
     logging.info('Extracting data')
