@@ -46,13 +46,19 @@ class ExtractionPluginInterface(IPlugin.IPlugin):
 
     def can_extract(self, source, data_model_name, data_model):
         """
-        Determines whether the plugin can extract data for given combination of source and data model. Returns a bool
+        Determines whether the plugin can extract data for given combination of source and data model.
+
+        Source will be an instance of urlparse.ParseResult
+
+        Returns a bool.
         """
         return False
 
     def extract(self, source, data_model_name, data_model, data_item_template):
         """
         Extract data from a given combination of source and data model.
+
+        Source will be an instance of urlparse.ParseResult
 
         Returns a list of (UID value, ExtractedDataItem instance) tuples
         """
