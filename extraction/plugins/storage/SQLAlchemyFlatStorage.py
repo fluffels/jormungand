@@ -14,6 +14,24 @@ __author__ = 'aj@spinglab.co'
 RecordBase = declarative_base()
 
 
+def get_scoped_session(engine):
+    """ Returns a context manager that yields a session
+
+    """
+    @contextmanager
+    def session_scope():
+        session = sessionmaker(engine)()
+        try:
+            yield session
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+    return session_scope()
+
+
 class StorageRecord(RecordBase):
     """
     SQLALchemy Record class defining the structure of the table used to store Extracted data
@@ -74,28 +92,13 @@ class SQLAlchemyFlatJSONStoragePlugin(StoragePluginInterface):
         self.engine = create_engine(rdbms_url)
         if sqlalchemy_loglevel:
             logging.getLogger('sqlalchemy.engine').setLevel(sqlalchemy_loglevel)
-        self.session_class = sessionmaker(self.engine)
         RecordBase.metadata.create_all(self.engine)
-        # Define ContextManager
-        @contextmanager
-        def session_scope():
-            """Provide a transactional scope around a series of operations."""
-            session = self.session_class()
-            try:
-                yield session
-                session.commit()
-            except:
-                session.rollback()
-                raise
-            finally:
-                session.close()
-        self.session_scope = session_scope
 
     def can_store(self, data_model_name, data_model):
         return True
 
     def store(self, data_items, data_model_name, data_model):
-        with self.session_scope() as session:
+        with get_scoped_session(self.engine) as session:
             data_model = dumps(data_model, cls=SQLAlchemyFlatJSONEncoder)
             uid_version_checksums = {
                 (uid, version): checksum for uid, version, checksum in session
