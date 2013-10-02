@@ -10,7 +10,7 @@ class ExtractedDataItem(dict):
     ExtractedDataItem instance is instantiated using an instance of ExtractedDataItem then the attributes set on the
     input item are copied over to the new item.
     """
-    def __init__(self, seq=None, **kwargs):
+    def __init__(self, seq={}, **kwargs):
         super(ExtractedDataItem, self).__init__(seq, **kwargs)
         # If input sequence is an instance of ExtractedDataItem or one of its descendants then copy its custom attributes
         if isinstance(seq, ExtractedDataItem):
