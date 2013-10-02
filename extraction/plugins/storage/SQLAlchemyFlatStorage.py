@@ -75,7 +75,10 @@ class SQLAlchemyFlatJSONEncoder(JSONEncoder):
 
             }
         if isinstance(o, datetime):
-            return o.isoformat()
+            return {
+                '__class__': '%s.%s' % (datetime.__module__, datetime.__name__),
+                'value': o.isoformat()
+            }
         return super(SQLAlchemyFlatJSONEncoder, self).default(o)
 
 
