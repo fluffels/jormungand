@@ -53,7 +53,7 @@ def extract(json_config_file=None, plugin_roots=[], sources=[], logging=logging)
         for data_model_name, data_model in data_models.items():
             for input in inputs:
                 if plugin.can_extract(input, data_model_name, data_model):
-                    logging.info('Extracting data from %s using Data Model %s and Extraction plugin %s ' % (input_file, data_model_name, plugin))
+                    logging.info('Extracting data from %s using Data Model %s and Extraction plugin %s ' % (input, data_model_name, plugin))
                     extracted_data[data_model_name].extend(
                         plugin.extract(input, data_model_name, data_model, deepcopy(data_templates[data_model_name])))
     # Post-Process
