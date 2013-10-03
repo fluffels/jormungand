@@ -47,7 +47,14 @@ class SQLAlchemyFlatStorageSourcePlugin(ExtractionPluginInterface):
         extracted_data = []
         with get_scoped_session(create_engine(source.geturl())) as session:
             for record in session.query(StorageRecord).filter(StorageRecord.data_model_name == data_model_name).all():
-                extracted_data.append((loads(record.uid, object_hook=parse_object), ExtractedDataItem(vars(record))))
+                data_item = ExtractedDataItem(loads(record.data_item, object_hook=parse_object))
+                for key, value in loads(record.data_item_metadata, object_hook=parse_object).items():
+                    setattr(data_item, key, value)
+                data_item.version = record.version
+                data_item.created = record.created
+                data_item.checksum = record.checksum
+                data_item.data_model = loads(record.data_model)
+                extracted_data.append((loads(record.uid, object_hook=parse_object), data_item))
         return extracted_data
 
 
