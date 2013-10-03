@@ -6,7 +6,7 @@ from hashlib import md5
 from json import dumps, JSONEncoder
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, String, Integer, DateTime, Binary, create_engine, func
+from sqlalchemy import Column, String, Integer, DateTime, LargeBinary, create_engine, func
 import logging
 
 __author__ = 'aj@spinglab.co'
@@ -38,13 +38,13 @@ class StorageRecord(RecordBase):
     """
     __tablename__ = 'storage'
 
-    data_model = Column(String)
+    data_model = Column(LargeBinary)
     data_model_name = Column(String, primary_key=True)
     uid = Column(String, primary_key=True)
     version = Column(Integer, primary_key=True, autoincrement=False)
     created = Column(DateTime, default=datetime.now)
-    data_item = Column(Binary)
-    data_item_metadata = Column(Binary)
+    data_item = Column(LargeBinary)
+    data_item_metadata = Column(LargeBinary)
     checksum = Column(String(length=32))
 
 
