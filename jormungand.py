@@ -2,8 +2,8 @@ from argparse import ArgumentParser
 from copy import deepcopy
 from urlparse import urlparse
 import sys
-from extraction.api import *
-from extraction import ExtractionPluginManager
+from jormungand.api import *
+from jormungand import ExtractionPluginManager
 import os
 import logging
 

@@ -4,9 +4,9 @@ from datetime import datetime
 from dateutil import parser
 from json import loads, JSONDecoder
 from sqlalchemy import create_engine
-from extraction.api.datamodel import FieldDefinition
-from extraction.api.extraction import ExtractionPluginInterface, ExtractedDataItem
-from extraction.plugins.storage.SQLAlchemyFlatStorage import StorageRecord, get_scoped_session
+from jormungand.api.datamodel import FieldDefinition
+from jormungand.api.extraction import ExtractionPluginInterface, ExtractedDataItem
+from jormungand.plugins.storage.SQLAlchemyFlatStorage import StorageRecord, get_scoped_session
 
 __author__ = 'aj@springlab.co'
 

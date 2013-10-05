@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from datetime import datetime
-from extraction.api import StoragePluginInterface
-from extraction.api.datamodel import FieldDefinition, generate_field_value
+from jormungand.api import StoragePluginInterface
+from jormungand.api.datamodel import FieldDefinition, generate_field_value
 from hashlib import md5
 from json import dumps, JSONEncoder
 from sqlalchemy.ext.declarative import declarative_base
@@ -68,6 +68,7 @@ class SQLAlchemyFlatJSONEncoder(JSONEncoder):
         if isinstance(o, FieldDefinition):
             return {
                 '__class__': '%s.%s' % (FieldDefinition.__module__, FieldDefinition.__name__),
+                #TODO: Fix type to be properly look-up-able
                 'type': '%s.%s' % (o.type.__module__, o.type.__name__),
                 'default_value': generate_field_value(o),
                 'required': o.required,
