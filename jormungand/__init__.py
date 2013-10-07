@@ -8,7 +8,7 @@ import sys
 __author__ = 'aj@springlab.co'
 
 
-class ExtractionPluginManager(PluginManager.PluginManager):
+class JormungandPluginManager(PluginManager.PluginManager):
     """
     Extends the standard Yapsy PluginManager to provided extended functionality:
     * JSON Configuration File
@@ -26,7 +26,7 @@ class ExtractionPluginManager(PluginManager.PluginManager):
                     'Storage': StoragePluginInterface},
                  directories_list=None,
                  plugin_info_ext="extraction.plugin"):
-        super(ExtractionPluginManager, self).__init__(categories_filter, directories_list, plugin_info_ext)
+        super(JormungandPluginManager, self).__init__(categories_filter, directories_list, plugin_info_ext)
         self.json_config = json.load(open(os.path.abspath(json_config_file), 'rb')) if json_config_file else {}
         if self.json_config.get('plugin_roots'):
             for path in self.json_config.get('plugin_roots'):
