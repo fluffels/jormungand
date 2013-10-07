@@ -1,10 +1,9 @@
 import logging
-from copy import copy
-from datetime import datetime
+from datetime import timedelta
 from dateutil import parser
-from json import loads, JSONDecoder
+from json import loads
 from sqlalchemy import create_engine
-from jormungand.api.datamodel import FieldDefinition
+from jormungand.api.datamodel import FieldDefinition, FIELD_TYPES
 from jormungand.api.extraction import ExtractionPluginInterface, ExtractedDataItem
 from jormungand.plugins.storage.SQLAlchemyFlatStorage import StorageRecord, get_scoped_session
 
@@ -12,13 +11,18 @@ __author__ = 'aj@springlab.co'
 
 
 def parse_object(o):
+    """
+    Custom Object Parsing function used during JSON decoding to handle FieldDefinitions and date, time, datetime and timedelta values
+    """
     if not hasattr(o, '__class__'):
         return o
-    if o['__class__'] == '%s.%s' % (FieldDefinition.__module__, FieldDefinition.__name__):
-        #TODO: Lookup type
-        return FieldDefinition(default_value=o['default_value'], required=o['required'], unique=o['unique'])
-    if o['__class__'] == '%s.%s' % (datetime.__module__, datetime.__name__):
+    if o['__class__'] == 'FieldDefinition':
+        return FieldDefinition(type=FIELD_TYPES[o['type']], default_value=o['default_value'], required=o['required'], unique=o['unique'])
+    if o['__class__'] in ('datetime', 'date', 'time'):
         return parser.parse(o['value'])
+    if o['__class__'] in ('timedelta'):
+        return timedelta(**o['value'])
+    return o
 
 
 class SQLAlchemyFlatStorageSourcePlugin(ExtractionPluginInterface):
