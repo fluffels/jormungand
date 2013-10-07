@@ -1,7 +1,8 @@
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, date, time, timedelta
+from types import NoneType
 from jormungand.api import StoragePluginInterface
-from jormungand.api.datamodel import FieldDefinition, generate_field_value
+from jormungand.api.datamodel import FIELD_TYPES, FieldDefinition, generate_field_value
 from hashlib import md5
 from json import dumps, JSONEncoder
 from sqlalchemy.ext.declarative import declarative_base
@@ -67,18 +68,24 @@ class SQLAlchemyFlatJSONEncoder(JSONEncoder):
         """
         if isinstance(o, FieldDefinition):
             return {
-                '__class__': '%s.%s' % (FieldDefinition.__module__, FieldDefinition.__name__),
-                #TODO: Fix type to be properly look-up-able
-                'type': '%s.%s' % (o.type.__module__, o.type.__name__),
+                '__class__': 'FieldDefinition',
+                'type': o.type.__name__ if o is not NoneType else 'NoneType',
                 'default_value': generate_field_value(o),
                 'required': o.required,
                 'unique': o.unique
 
             }
-        if isinstance(o, datetime):
+        if isinstance(o, (datetime, date, time)):
             return {
-                '__class__': '%s.%s' % (datetime.__module__, datetime.__name__),
+                '__class__': o.__class__.__name__,
                 'value': o.isoformat()
+            }
+        if isinstance(o, timedelta):
+            return {
+                '__class__': 'timedelta',
+                'value': {
+                    key: getattr(o, key) for key in ('days', 'seconds', 'microseconds', 'milliseconds', 'minutes', 'hours', 'weeks')
+                }
             }
         return super(SQLAlchemyFlatJSONEncoder, self).default(o)
 
