@@ -1,6 +1,12 @@
 from yapsy import IPlugin
+from types import NoneType
+import datetime
 
 __author__ = 'aj@springlab.co'
+
+FIELD_TYPES = {
+    v.__name__: v for v in (NoneType, basestring, int, float, bool, list, dict, datetime.datetime, datetime.date, datetime.time, datetime.timedelta)
+}
 
 
 class FieldDefinition(object):
@@ -9,6 +15,10 @@ class FieldDefinition(object):
     """
 
     def __init__(self, type=str, default_value=None, required=False, unique=False):
+        if type not in FIELD_TYPES.values():
+            raise Exception('%s not an allowed type' % type)
+        if required and not isinstance(default_value, type):
+            raise Exception('Value is required but default_value %s is not an instance of %s' % (default_value, type))
         self.type = type
         self.default_value = default_value
         self.required = required
