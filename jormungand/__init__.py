@@ -25,7 +25,7 @@ class JormungandPluginManager(PluginManager.PluginManager):
                     'Validation': ValidationPluginInterface,
                     'Storage': StoragePluginInterface},
                  directories_list=None,
-                 plugin_info_ext="extraction.plugin"):
+                 plugin_info_ext="jormungand.plugin"):
         super(JormungandPluginManager, self).__init__(categories_filter, directories_list, plugin_info_ext)
         self.json_config = json.load(open(os.path.abspath(json_config_file), 'rb')) if json_config_file else {}
         if self.json_config.get('plugin_roots'):
