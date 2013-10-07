@@ -92,7 +92,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # Configure Logging
     logging.basicConfig()
-    logging = logging.getLogger('EXTRACTION')
+    logging = logging.getLogger('JORMUNGAND')
     logging.setLevel(args.loglevel)
     jormungand(args.config, args.plugin_roots, args.sources, logging)
 
