@@ -1,21 +1,19 @@
 from argparse import ArgumentParser
-from copy import deepcopy
 from urlparse import urlparse
-import sys
-from jormungand.api import *
-from jormungand import ExtractionPluginManager
+from jormungand import JormungandPluginManager
 import os
 import logging
+import sys
 
 __author__ = 'aj@springlab.co'
 
 
-def extract(json_config_file=None, plugin_roots=[], sources=[], logging=logging):
+def jormungand(json_config_file=None, plugin_roots=[], sources=[], logging=logging):
     """ Entry-point into the Extraction Process """
     #TODO: Refactor into separate functions or, possibly, a class in the extraction module
     # Init Plugin Manager and Plugins
     logging.info('Initialising Extraction Plugin Manager')
-    plugin_manager = ExtractionPluginManager(json_config_file)
+    plugin_manager = JormungandPluginManager(json_config_file)
     plugin_manager.extendPluginPlaces([os.path.abspath(plugin_root) for plugin_root in plugin_roots])
     plugin_manager.extendPluginPlaces([os.path.join(os.path.dirname(__file__))])
     plugin_manager.collectPlugins()
@@ -24,11 +22,11 @@ def extract(json_config_file=None, plugin_roots=[], sources=[], logging=logging)
     # Load Data Models
     logging.info('Loading Data Models')
     data_models = {}
-    data_templates = {}
+    data_template_generators = {}
     for plugin_info in plugin_manager.getPluginsOfCategory('DataModel'):
         model_name = plugin_info.plugin_object.get_data_model_name()
         data_models[model_name] = plugin_info.plugin_object.get_data_model()
-        data_templates[model_name] = plugin_info.plugin_object.get_data_template()
+        data_template_generators[model_name] = plugin_info.plugin_object.get_data_template_generator()
         logging.info('Loaded Data Model %s' % model_name)
     # Obtain a full list of sources
     logging.info('Generating list of sources to process')
@@ -55,7 +53,7 @@ def extract(json_config_file=None, plugin_roots=[], sources=[], logging=logging)
                 if plugin.can_extract(input, data_model_name, data_model):
                     logging.info('Extracting data from %s using Data Model %s and Extraction plugin %s ' % (input, data_model_name, plugin))
                     extracted_data[data_model_name].extend(
-                        plugin.extract(input, data_model_name, data_model, deepcopy(data_templates[data_model_name])))
+                        plugin.extract(input, data_model_name, data_model, data_template_generators[data_model_name]))
     # Post-Process
     logging.info('Post-Processing Extracted Data')
     for plugin_info in plugin_manager.getPluginsOfCategory('PostProcessing'):
@@ -96,5 +94,5 @@ if __name__ == '__main__':
     logging.basicConfig()
     logging = logging.getLogger('EXTRACTION')
     logging.setLevel(args.loglevel)
-    extract(args.config, args.plugin_roots, args.sources, logging)
+    jormungand(args.config, args.plugin_roots, args.sources, logging)
 
