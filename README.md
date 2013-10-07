@@ -21,3 +21,12 @@ Jormungand defines its basic process model as follows:
 3. Post-Processing
 4. Validation
 5. Storage
+
+
+Roadmap
+-------
+
+The following items would be nice to have in the future:
+
+1. Multi-processing support
+2. Transposing data from one Data Model to another.
