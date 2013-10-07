@@ -1,3 +1,4 @@
+from copy import deepcopy
 from yapsy import IPlugin
 from types import NoneType
 import datetime
@@ -96,13 +97,11 @@ class DataModelPluginInterface(IPlugin.IPlugin):
             }]
         }
 
-    def get_data_template(self):
+    def get_data_template_generator(self):
         """
-        Uses the Data Model to generate a template dict instance of the Data Model.
-
-        This template dict instance can be copied using copy.deepcopy to provide a dict instance that merely needs
-        to be "filled in" with values in order to produce a valid instance of the Data Model.
+        Uses the Data Model to generate a function that can be called to generate template dict instance of the Data Model.
         """
-        return generate_data_template(self.get_data_model().items())
+        data_template = generate_data_template(self.get_data_model().items())
+        return lambda: deepcopy(data_template)
 
 
