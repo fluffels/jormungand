@@ -14,7 +14,7 @@ def parse_object(o):
     """
     Custom Object Parsing function used during JSON decoding to handle FieldDefinitions and date, time, datetime and timedelta values
     """
-    if not hasattr(o, '__class__'):
+    if not o.get('__class__'):
         return o
     if o['__class__'] == 'FieldDefinition':
         return FieldDefinition(type=FIELD_TYPES[o['type']], default_value=o['default_value'], required=o['required'], unique=o['unique'])
