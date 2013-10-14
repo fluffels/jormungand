@@ -1,9 +1,9 @@
 from argparse import ArgumentParser
 from jormungand import JormungandPluginManager
+from urlparse import urlparse
 import os
 import logging
 import sys
-import urlparse
 
 __author__ = 'aj@springlab.co'
 
@@ -33,7 +33,7 @@ def jormungand(json_config_file=None, plugin_roots=[], sources=[], logging=loggi
     inputs = []
     for source in sources:
         original_source_value = source
-        source = urlparse.urlparse(source, allow_fragments=True)
+        source = urlparse(source, allow_fragments=True)
         if source.scheme in ('', 'file'):
             if os.path.isdir(source.path):
                 for directory, subdirectories, files in os.walk(source.path):
