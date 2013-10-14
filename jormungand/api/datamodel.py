@@ -6,7 +6,7 @@ import datetime
 __author__ = 'aj@springlab.co'
 
 FIELD_TYPES = {
-    v.__name__ if v is not NoneType else 'NoneType': v for v in (NoneType, basestring, int, float, bool, list, dict, datetime.datetime, datetime.date, datetime.time, datetime.timedelta)
+    v.__name__ if v is not NoneType else 'NoneType': v for v in (NoneType, str, unicode, int, float, bool, list, dict, datetime.datetime, datetime.date, datetime.time, datetime.timedelta)
 }
 
 
