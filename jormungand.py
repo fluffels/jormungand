@@ -1,9 +1,9 @@
 from argparse import ArgumentParser
-from urlparse import urlparse
 from jormungand import JormungandPluginManager
 import os
 import logging
 import sys
+import urlparse
 
 __author__ = 'aj@springlab.co'
 
@@ -32,16 +32,23 @@ def jormungand(json_config_file=None, plugin_roots=[], sources=[], logging=loggi
     logging.info('Generating list of sources to process')
     inputs = []
     for source in sources:
-        source = urlparse(source)
+        original_source_value = source
+        source = urlparse.urlparse(source, allow_fragments=True)
         if source.scheme in ('', 'file'):
             if os.path.isdir(source.path):
                 for directory, subdirectories, files in os.walk(source.path):
-                    inputs.extend([urlparse(os.path.join(directory, file)) for file in files])
+                    for file in files:
+                        file_path = os.path.join(directory, file)
+                        result = urlparse(file_path)
+                        setattr(result, 'uri', file_path)
+                        inputs.append(result)
             elif os.path.isfile(source.path):
+                setattr(source, 'uri', original_source_value)
                 inputs.append(source)
         else:
+            setattr(source, 'uri', original_source_value)
             inputs.append(source)
-    logging.info('Finalized list of sources to process: %s' % ', '.join([input.geturl() for input in inputs]))
+    logging.info('Finalized list of sources to process: %s' % ', '.join([input.uri for input in inputs]))
     #TODO: A fair bit of repeated code here, refactor
     # Extract data from input files
     logging.info('Extracting data')
@@ -51,7 +58,7 @@ def jormungand(json_config_file=None, plugin_roots=[], sources=[], logging=loggi
         for data_model_name, data_model in data_models.items():
             for input in inputs:
                 if plugin.can_extract(input, data_model_name, data_model):
-                    logging.info('Extracting data from %s using Data Model %s and Extraction plugin %s ' % (input, data_model_name, plugin))
+                    logging.info('Extracting data from %s using Data Model %s and Extraction plugin %s ' % (input.uri, data_model_name, plugin))
                     extracted_data[data_model_name].extend(
                         plugin.extract(input, data_model_name, data_model, data_template_generators[data_model_name]))
     # Post-Process
