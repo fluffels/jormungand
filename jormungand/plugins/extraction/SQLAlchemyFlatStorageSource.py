@@ -41,15 +41,15 @@ class SQLAlchemyFlatStorageSourcePlugin(ExtractionPluginInterface):
         Returns true if the source URL can be transformed into a SQLAlchemy engine instance using create_engine
         """
         try:
-            with get_scoped_session(create_engine(source.geturl())) as session:
+            with get_scoped_session(create_engine(source.uri)) as session:
                 return session.query(StorageRecord).filter(StorageRecord.data_model_name == data_model_name).count() > 0
-        except:
+        except Exception, e:
             return False
         return True
 
     def extract(self, source, data_model_name, data_model, data_item_template):
         extracted_data = []
-        with get_scoped_session(create_engine(source.geturl())) as session:
+        with get_scoped_session(create_engine(source.uri)) as session:
             for record in session.query(StorageRecord).filter(StorageRecord.data_model_name == data_model_name).all():
                 data_item = ExtractedDataItem(loads(record.data_item, object_hook=parse_object))
                 for key, value in loads(record.data_item_metadata, object_hook=parse_object).items():
