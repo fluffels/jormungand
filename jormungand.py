@@ -12,7 +12,7 @@ def jormungand(json_config_file=None, plugin_roots=[], sources=[], logging=loggi
     """ Entry-point into the Extraction Process """
     #TODO: Refactor into separate functions or, possibly, a class in the extraction module
     # Init Plugin Manager and Plugins
-    logging.info('Initialising Extraction Plugin Manager')
+    logging.info('Initialising Jormungand Plugin Manager')
     plugin_manager = JormungandPluginManager(json_config_file)
     plugin_manager.extendPluginPlaces([os.path.abspath(plugin_root) for plugin_root in plugin_roots])
     plugin_manager.extendPluginPlaces([os.path.join(os.path.dirname(__file__))])
@@ -41,7 +41,7 @@ def jormungand(json_config_file=None, plugin_roots=[], sources=[], logging=loggi
                 inputs.append(source)
         else:
             inputs.append(source)
-    logging.info('Finalized list of sources to process: %s' % ', '.join(inputs))
+    logging.info('Finalized list of sources to process: %s' % ', '.join([input.geturl() for input in inputs]))
     #TODO: A fair bit of repeated code here, refactor
     # Extract data from input files
     logging.info('Extracting data')
@@ -93,6 +93,7 @@ if __name__ == '__main__':
     # Configure Logging
     logging.basicConfig()
     logging = logging.getLogger('JORMUNGAND')
+    #TODO: Configure File Logging
     logging.setLevel(args.loglevel)
     jormungand(args.config, args.plugin_roots, args.sources, logging)
 
