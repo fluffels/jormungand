@@ -96,11 +96,13 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--pluginroots', dest='plugin_roots', default=[], nargs='*', )
     parser.add_argument('-s', '--source', dest='sources', default=[], nargs='*')
     parser.add_argument('--loglevel', default='INFO')
+    parser.add_argument('--logfile', default=None)
     args = parser.parse_args()
     # Configure Logging
     logging.basicConfig()
-    logging = logging.getLogger('JORMUNGAND')
-    #TODO: Configure File Logging
-    logging.setLevel(args.loglevel)
-    jormungand(args.config, args.plugin_roots, args.sources, logging)
+    logger = logging.getLogger('JORMUNGAND')
+    logger.setLevel(args.loglevel)
+    if args.logfile:
+        logger.addHandler(logging.FileHandler(args.logfile))
+    jormungand(args.config, args.plugin_roots, args.sources, logger)
 
