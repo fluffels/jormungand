@@ -1,0 +1,9 @@
+[Core]
+Name = Statistics Storage
+Module = StatisticsStorage
+
+[Documentation]
+Description = Stores statistics about extracted data
+Author = Adam Jorgensen (aj@springlab.co)
+Version = 0.1
+Website = http://springlab.co
