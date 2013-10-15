@@ -2,7 +2,7 @@ import logging
 from datetime import timedelta
 from dateutil import parser
 from json import loads
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from jormungand.api.datamodel import FieldDefinition, FIELD_TYPES
 from jormungand.api.extraction import ExtractionPluginInterface, ExtractedDataItem
 from jormungand.plugins.storage.SQLAlchemyFlatStorage import StorageRecord, get_scoped_session
@@ -31,8 +31,8 @@ class SQLAlchemyFlatStorageSourcePlugin(ExtractionPluginInterface):
     SQLAlchemyFlatStorage plugin.
     """
 
-    def __init__(self, sqlalchemy_loglevel=None):
-        # Init SQLAlchemy
+    def __init__(self, sqlalchemy_loglevel=None, latest_versions_only=True):
+        self.latest_versions_only = latest_versions_only
         if sqlalchemy_loglevel:
             logging.getLogger('sqlalchemy.engine').setLevel(sqlalchemy_loglevel)
 
@@ -50,7 +50,10 @@ class SQLAlchemyFlatStorageSourcePlugin(ExtractionPluginInterface):
     def extract(self, source, data_model_name, data_model, data_item_template):
         extracted_data = []
         with get_scoped_session(create_engine(source.uri)) as session:
-            for record in session.query(StorageRecord).filter(StorageRecord.data_model_name == data_model_name).all():
+            query = session.query(StorageRecord).filter(StorageRecord.data_model_name == data_model_name)
+            if self.latest_versions_only:
+                query = query.group_by(StorageRecord.uid).order_by(desc(StorageRecord.version))
+            for record in query:
                 data_item = ExtractedDataItem(loads(record.data_item, object_hook=parse_object))
                 for key, value in loads(record.data_item_metadata, object_hook=parse_object).items():
                     setattr(data_item, key, value)
