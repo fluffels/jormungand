@@ -61,40 +61,26 @@ class StatisticsStoragePlugin(StoragePluginInterface):
                 validation_errors[validation_error] += 1
         # Store Statistics
         with open(os.path.join(self.output_path, '%s.statistics.txt' % data_model_name), 'wb') as output:
-            lines = [
-                'Statistics for %s:' % data_model_name,
-                '',
-                'Totals:',
-                'Total data items: %d' % len(data_items),
-                'Total valid data items: %d' % valid,
-                '',
-                'Total unique data_item UIDS: %d' % len(uids),
-                'Total valid unique data_item UIDS: %d' % len(valid_uids),
-                '',
-                'Sources:'
-            ] + [
-                'Source %s: %s Data Items' % (source, source_count) for source, source_count in sources.items()
-            ] + [
-                '',
-                'Validators:'
-            ] + [
-                '%s Validated %d Data Items' % (validator, validator_count) for validator, validator_count in validated_by.items()
-            ] + [
-                '',
-                'Validation Errors:'
-            ] + [
-                '%d %s Validation Errors' % (validation_error, validation_error_count) for validation_error, validation_error_count in validation_errors.items()
-            ] + [
-                '',
-                'Post-Processors:',
-            ] + [
-                '%s Post-Processed %d Data Items' % (processor, processor_count) for processor, processor_count in processed_by.items()
-            ] + [
-                '',
-                'Post-Processing Errors:'
-            ] + [
-                '%d %s Post-Processing Errors' % (processor, processor_error_count) for processor, processor_error_count in processing_errors.items()
-            ]
-            output.writelines('\n'.join(lines))
+            output.write('Statistics for %s:\n\n' % data_model_name)
+            output.write('Totals:\n')
+            output.write('Total data items: %d\n' % len(data_items))
+            output.write('Total valid data items: %d\n\n' % valid)
+            output.write('Total unique data_item UIDS: %d\n' % len(uids))
+            output.write('Total valid unique data_item UIDS: %d\n\n' % len(valid_uids))
+            output.write('Sources:\n\n')
+            for source, source_count in sources.items():
+                output.write('Source %s: %s Data Items\n' % (source, source_count))
+            output.write('\nValidators:\n')
+            for validator, validator_count in validated_by.items():
+                output.write('%s Validated %d Data Items\n' % (validator, validator_count))
+            output.write('\nValidation Errors:\n')
+            for validation_error, validation_error_count in validation_errors.items():
+                output.write('%d "%s" Validation Errors\n' % (validation_error_count, validation_error))
+            output.write('\nPost-Processors:\n')
+            for processor, processor_count in processed_by.items():
+                output.write('%s Post-Processed %d Data Items\n' % (processor, processor_count))
+            output.write('\nPost-Processing Errors:\n')
+            for processor, processor_error_count in processing_errors.items():
+                output.write('%d "%s" Post-Processing Errors\n' % (processor_error_count, processor))
         return True
 
