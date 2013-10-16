@@ -34,7 +34,7 @@ def generate_field_value(field_definition):
         if isinstance(field_definition.default_value, field_definition.type):
             return field_definition.default_value
         return field_definition.type()
-    finally:
+    except:
         return None
 
 
