@@ -4,6 +4,6 @@ Module = SQLAlchemyFlatStorageSource
 
 [Documentation]
 Description = Extracts data stored in a table in a database using SQLAlchemy
-Author = Adam Jorgensen (aj@springlab.co)
+Author = Adam Jorgensen (adam.jorgensen.za@gmail.com)
 Version = 0.1
 Website = http://springlab.co

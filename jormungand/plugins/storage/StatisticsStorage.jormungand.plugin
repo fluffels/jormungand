@@ -4,6 +4,6 @@ Module = StatisticsStorage
 
 [Documentation]
 Description = Stores statistics about extracted data
-Author = Adam Jorgensen (aj@springlab.co)
+Author = Adam Jorgensen (adam.jorgensen.za@gmail.com)
 Version = 0.1
 Website = http://springlab.co
