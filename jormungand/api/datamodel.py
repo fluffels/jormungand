@@ -3,7 +3,7 @@ from yapsy import IPlugin
 from types import NoneType
 import datetime
 
-__author__ = 'aj@springlab.co'
+__author__ = 'adam.jorgensen.za@gmail.com'
 
 FIELD_TYPES = {
     v.__name__ if v is not NoneType else 'NoneType': v for v in (NoneType, str, unicode, int, float, bool, list, dict, datetime.datetime, datetime.date, datetime.time, datetime.timedelta)

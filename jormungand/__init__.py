@@ -5,7 +5,7 @@ import json
 import os
 import sys
 
-__author__ = 'aj@springlab.co'
+__author__ = 'adam.jorgensen.za@gmail.com'
 
 
 class JormungandPluginManager(PluginManager.PluginManager):

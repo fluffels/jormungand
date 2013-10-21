@@ -1,7 +1,7 @@
 import collections
 from yapsy import IPlugin
 
-__author__ = 'aj@springlab.co'
+__author__ = 'adam.jorgensen.za@gmail.com'
 
 
 class ExtractedDataItem(dict):

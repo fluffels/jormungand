@@ -5,7 +5,7 @@ import os
 import logging
 import sys
 
-__author__ = 'aj@springlab.co'
+__author__ = 'adam.jorgensen.za@gmail.com'
 
 
 def jormungand(json_config_file=None, plugin_roots=[], sources=[], logging=logging):

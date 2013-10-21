@@ -1,6 +1,6 @@
 from fabric.api import run, settings, sudo, env, cd
 
-__author__ = 'aj@springlab.co.'
+__author__ = 'adam.jorgensen.za@gmail.com.'
 
 
 def staging():

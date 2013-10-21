@@ -1,7 +1,7 @@
 import os
 from jormungand.api import StoragePluginInterface
 
-__author__ = 'aj@springlab.co'
+__author__ = 'adam.jorgensen.za@gmail.com'
 
 
 class StatisticsStoragePlugin(StoragePluginInterface):

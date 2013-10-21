@@ -4,4 +4,4 @@ from postprocessing import PostProcessingPluginInterface
 from validation import ValidationPluginInterface
 from storage import StoragePluginInterface
 
-__author__ = 'aj@springlab.co'
+__author__ = 'adam.jorgensen.za@gmail.com'

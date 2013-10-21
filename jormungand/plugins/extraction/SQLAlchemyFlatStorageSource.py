@@ -7,7 +7,7 @@ from jormungand.api.datamodel import FieldDefinition, FIELD_TYPES
 from jormungand.api.extraction import ExtractionPluginInterface, ExtractedDataItem
 from jormungand.plugins.storage.SQLAlchemyFlatStorage import StorageRecord, get_scoped_session
 
-__author__ = 'aj@springlab.co'
+__author__ = 'adam.jorgensen.za@gmail.com'
 
 
 def parse_object(o):
