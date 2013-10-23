@@ -11,11 +11,17 @@ Contents
 4. Process Model
 5. Includes JSON Configurations
 6. Description of Plugins
+
    1. Extraction
+
       1. SQLAlchemy Flat Storage Source
+
    2. Storage
+
       1. SQLALchemy Flat Storage
+
 7. Description of API
+
    1. Data Model
    2. Extraction
    3. Normalisation
