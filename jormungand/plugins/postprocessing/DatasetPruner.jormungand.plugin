@@ -1,0 +1,9 @@
+[Core]
+Name = Dataset Pruner
+Module = DatasetPruner
+
+[Documentation]
+Description = A plugin intended for use during testing that reduces the size of the dataset
+Author = Adam Jorgensen (adam.jorgensen.za@gmail.com)
+Version = 0.1
+Website = http://springlab.co
