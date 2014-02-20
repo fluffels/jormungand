@@ -46,8 +46,8 @@ Prerequisites
 =============
 
 1. Python 2.7 or PyPy 2.1
-2. Yapsy 1.9.2
-3. SQLAlchemy 0.8.2 (OPTIONAL: Only required if you plan to use the SQLAlchemy Flat Storage plugin)
+2. Yapsy 1.10.223
+3. SQLAlchemy 0.9.3 (OPTIONAL: Only required if you plan to use the SQLAlchemy Flat Storage plugin)
 
 
 Roadmap
