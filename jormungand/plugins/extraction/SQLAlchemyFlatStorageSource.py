@@ -2,7 +2,8 @@ import logging
 from datetime import timedelta
 from dateutil import parser
 from json import loads
-from sqlalchemy import create_engine, desc
+from sqlalchemy import create_engine, desc, func, and_
+from sqlalchemy.orm import aliased
 from jormungand.api.datamodel import FieldDefinition, FIELD_TYPES
 from jormungand.api.extraction import ExtractionPluginInterface, ExtractedDataItem
 from jormungand.plugins.storage.SQLAlchemyFlatStorage import StorageRecord, get_scoped_session
@@ -50,9 +51,17 @@ class SQLAlchemyFlatStorageSourcePlugin(ExtractionPluginInterface):
     def extract(self, source, data_model_name, data_model, data_item_template):
         extracted_data = []
         with get_scoped_session(create_engine(source.uri)) as session:
-            query = session.query(StorageRecord).filter(StorageRecord.data_model_name == data_model_name)
-            if self.latest_versions_only:
-                query = query.group_by(StorageRecord.uid).order_by(desc(StorageRecord.version))
+            if not self.latest_versions_only:
+                query = session.query(StorageRecord).filter(StorageRecord.data_model_name == data_model_name)
+            else:
+                subquery = session.query(StorageRecord.uid, func.max(StorageRecord.version).label('version'))\
+                                  .filter(StorageRecord.data_model_name == data_model_name)\
+                                  .group_by(StorageRecord.uid)\
+                                  .subquery()
+                query = session.query(StorageRecord).join(subquery, and_(
+                    subquery.c.uid == StorageRecord.uid,
+                    subquery.c.version == StorageRecord.version
+                ))
             for record in query:
                 data_item = ExtractedDataItem(loads(record.data_item, object_hook=parse_object))
                 for key, value in loads(record.data_item_metadata, object_hook=parse_object).items():
