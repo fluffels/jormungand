@@ -4,7 +4,7 @@ from types import NoneType
 from jormungand.api import StoragePluginInterface
 from jormungand.api.datamodel import FIELD_TYPES, FieldDefinition, generate_field_value
 from hashlib import md5
-from json import dumps, JSONEncoder
+from simplejson import dumps, JSONEncoder
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, String, Integer, DateTime, LargeBinary, create_engine, func
@@ -55,12 +55,16 @@ class SQLAlchemyFlatJSONEncoder(JSONEncoder):
     """
 
     def __init__(self, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False,
-                 indent=4, separators=(',', ':'), encoding='utf-8', default=None):
+                 indent=4, separators=(',', ':'), encoding='utf-8', default=None, use_decimal=True,
+                 namedtuple_as_object=True, tuple_as_array=True, bigint_as_string=False, item_sort_key=None,
+                 for_json=False, ignore_nan=False):
         """
         Init is overridden to specify indent
         """
         super(SQLAlchemyFlatJSONEncoder, self).__init__(skipkeys, ensure_ascii, check_circular, allow_nan, sort_keys,
-                                                        indent, separators, encoding, default)
+                                                        indent, separators, encoding, default, use_decimal,
+                                                        namedtuple_as_object, tuple_as_array, bigint_as_string,
+                                                        item_sort_key, for_json, ignore_nan)
 
     def default(self, o):
         """
