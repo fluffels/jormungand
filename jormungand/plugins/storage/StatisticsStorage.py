@@ -33,6 +33,7 @@ class StatisticsStoragePlugin(StoragePluginInterface):
         validated_by = {}
         processing_errors = {}
         processed_by = {}
+        value_sort = lambda (key, value): value
         for uid, data_item in data_items:
             # Generate Statistics
             # UID Statistics
@@ -68,19 +69,24 @@ class StatisticsStoragePlugin(StoragePluginInterface):
             output.write('Total unique data_item UIDS: %d\n' % len(uids))
             output.write('Total valid unique data_item UIDS: %d\n\n' % len(valid_uids))
             output.write('Sources:\n\n')
-            for source, source_count in sources.items():
+            sources = sorted(sources.items(), reverse=True, key=value_sort)
+            for source, source_count in sources:
                 output.write('Source %s: %s Data Items\n' % (source, source_count))
             output.write('\nValidators:\n')
-            for validator, validator_count in validated_by.items():
+            validated_by = sorted(validated_by.items(), reverse=True, key=value_sort)
+            for validator, validator_count in validated_by:
                 output.write('%s Validated %d Data Items\n' % (validator, validator_count))
             output.write('\nValidation Errors:\n')
-            for validation_error, validation_error_count in validation_errors.items():
+            validation_errors = sorted(validation_errors.items(), reverse=True, key=value_sort)
+            for validation_error, validation_error_count in validation_errors:
                 output.write('%d "%s" Validation Errors\n' % (validation_error_count, validation_error))
             output.write('\nPost-Processors:\n')
-            for processor, processor_count in processed_by.items():
+            processed_by = sorted(processed_by.items(), reverse=True, key=value_sort)
+            for processor, processor_count in processed_by:
                 output.write('%s Post-Processed %d Data Items\n' % (processor, processor_count))
             output.write('\nPost-Processing Errors:\n')
-            for processor, processor_error_count in processing_errors.items():
+            processing_errors = sorted(processing_errors.items(), reverse=True, key=value_sort)
+            for processor, processor_error_count in processing_errors:
                 output.write('%d "%s" Post-Processing Errors\n' % (processor_error_count, processor))
         return True
 
