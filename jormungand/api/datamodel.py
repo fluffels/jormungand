@@ -79,7 +79,7 @@ class DataModelPluginInterface(IPlugin.IPlugin):
         Fields within the Data Model that map to multiple values can be indicated by
         mapping field name -> array containing a FieldDefinition instance.
 
-        Fields within the Dat Model that map to multiple objects can be indicated by
+        Fields within the Data Model that map to multiple objects can be indicated by
         mapping field name -> array containing a dict. The data within this dict must
         conform to the previous rules.
         """
@@ -88,7 +88,6 @@ class DataModelPluginInterface(IPlugin.IPlugin):
             'int_field': FieldDefinition(int, required=False),
             'nested_object': {
                 'str_field': FieldDefinition(default_value='Yes')
-
             },
             'nested_array': [FieldDefinition(str)],
             'nested_array_of_objects': [{
