@@ -88,7 +88,6 @@ class DataModelPluginInterface(IPlugin.IPlugin):
             'int_field': FieldDefinition(int, required=False),
             'nested_object': {
                 'str_field': FieldDefinition(default_value='Yes')
-
             },
             'nested_array': [FieldDefinition(str)],
             'nested_array_of_objects': [{
