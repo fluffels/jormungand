@@ -2,7 +2,7 @@
     "plugin_roots": ["/path/a", "/path/b"],
     "plugin_order": {
         "DataModel": ["Name Plugin A", "Name of Plugin B", "Name of Plugin C"],
-        "Extraction": ["Name of Plugin D. Plugins E and F are omitted and will be ordered naturally following Plugin A"],
+        "Extraction": ["Name of Plugin D. Plugins E and F are omitted and will be ordered naturally following Plugin D"],
         "PostProcessing": [],
         "Validation": ["An empty array or non-existent key indicates all plugins will be ordered naturally"],
         "Storage": []
