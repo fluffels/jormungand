@@ -72,8 +72,8 @@ class JormungandPluginManager(PluginManager.PluginManager):
                 exec candidateMainFile in candidate_globals
                 # exec (candidateMainFile, candidate_globals)
             except Exception, e:
-                logging.debug("Unable to execute the code in plugin: %s" % candidate_filepath)
-                logging.debug("\t The following problem occured: %s %s " % (os.linesep, e))
+                logging.error("Unable to execute the code in plugin: %s" % candidate_filepath)
+                logging.error("\t The following problem occured: %s %s " % (os.linesep, e))
                 if "__init__" in os.path.basename(candidate_filepath):
                     sys.path.remove(plugin_info.path)
                 continue
