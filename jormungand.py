@@ -101,7 +101,6 @@ if __name__ == '__main__':
     # Configure Logging
     logging.basicConfig(level=args.loglevel)
     logger = logging.getLogger('JORMUNGAND')
-    logger.setLevel(args.loglevel)
     if args.logfile:
         logger.addHandler(logging.FileHandler(args.logfile))
     jormungand(args.config, args.plugin_roots, args.sources, logger)
