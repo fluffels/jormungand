@@ -45,6 +45,10 @@ def jormungand(json_config_file=None, plugin_roots=[], sources=[], logging=loggi
             elif os.path.isfile(source.path):
                 setattr(source, 'uri', original_source_value)
                 inputs.append(source)
+            else:
+                logger.warn("Provided source {} is neither file, nor "
+                            "directory! Check that the file exists."
+                            .format(source))
         else:
             setattr(source, 'uri', original_source_value)
             inputs.append(source)
