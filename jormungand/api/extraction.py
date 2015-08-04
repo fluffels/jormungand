@@ -1,7 +1,14 @@
+__author__ = 'adam.jorgensen.za@gmail.com'
+
 import collections
+import logging
+
 from yapsy import IPlugin
 
-__author__ = 'adam.jorgensen.za@gmail.com'
+from jormungand.common.response_cache import ResponseCache
+
+
+logger = logging.getLogger('JORMUNGAND')
 
 
 class ExtractedDataItem(dict):
@@ -45,10 +52,17 @@ class ExtractionPluginInterface(IPlugin.IPlugin):
     Defines an interface for plugins that extract data from a source
     """
 
+    def __init__(self):
+        super(ExtractionPluginInterface, self).__init__()
+        self.response_cache = ResponseCache()
+
     def can_extract(self, source, data_model_name, data_model):
         """
         Determines whether the plugin can extract data for given combination of source and data model.
 
+        :type source: urlparse.ParseResult
+        :type data_model_name: object
+        :type data_model: object
         Source will be an instance of urlparse.ParseResult
 
         Returns a bool.
@@ -65,3 +79,10 @@ class ExtractionPluginInterface(IPlugin.IPlugin):
         """
         return []
 
+    def get(self, url):
+        try:
+            response = self.response_cache.get_url(url)
+            return response.text
+        except Exception as e:
+            logger.error("Could not access {}: {}".format(url, e.message))
+            return None
