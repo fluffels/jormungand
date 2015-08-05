@@ -8,9 +8,6 @@ from yapsy import IPlugin
 from jormungand.common.response_cache import ResponseCache
 
 
-logger = logging.getLogger('JORMUNGAND')
-
-
 class ExtractedDataItem(dict):
     """
     Overrides the dict class to allow metadata to be added to DataItem dicts by setting attributes on the item. If an
@@ -52,10 +49,6 @@ class ExtractionPluginInterface(IPlugin.IPlugin):
     Defines an interface for plugins that extract data from a source
     """
 
-    def __init__(self):
-        super(ExtractionPluginInterface, self).__init__()
-        self.response_cache = ResponseCache()
-
     def can_extract(self, source, data_model_name, data_model):
         """
         Determines whether the plugin can extract data for given combination of source and data model.
@@ -78,11 +71,3 @@ class ExtractionPluginInterface(IPlugin.IPlugin):
         Returns a list of (UID value, ExtractedDataItem instance) tuples
         """
         return []
-
-    def get(self, url):
-        try:
-            response = self.response_cache.get_url(url)
-            return response.text
-        except Exception as e:
-            logger.error("Could not access {}: {}".format(url, e.message))
-            return None
