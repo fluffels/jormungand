@@ -1,11 +1,7 @@
-__author__ = 'adam.jorgensen.za@gmail.com'
-
 import collections
-import logging
-
 from yapsy import IPlugin
 
-from jormungand.common.response_cache import ResponseCache
+__author__ = 'adam.jorgensen.za@gmail.com'
 
 
 class ExtractedDataItem(dict):
@@ -53,9 +49,6 @@ class ExtractionPluginInterface(IPlugin.IPlugin):
         """
         Determines whether the plugin can extract data for given combination of source and data model.
 
-        :type source: urlparse.ParseResult
-        :type data_model_name: object
-        :type data_model: object
         Source will be an instance of urlparse.ParseResult
 
         Returns a bool.
@@ -71,3 +64,4 @@ class ExtractionPluginInterface(IPlugin.IPlugin):
         Returns a list of (UID value, ExtractedDataItem instance) tuples
         """
         return []
+
