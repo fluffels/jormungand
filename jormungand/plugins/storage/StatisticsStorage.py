@@ -79,7 +79,7 @@ class StatisticsStoragePlugin(StoragePluginInterface):
             output.write('\nValidation Errors:\n')
             validation_errors = sorted(validation_errors.items(), reverse=True, key=value_sort)
             for validation_error, validation_error_count in validation_errors:
-                output.write('%d "%s" Validation Errors\n' % (validation_error_count, validation_error))
+                output.write(u'%d "%s" Validation Errors\n' % (validation_error_count, validation_error))
             output.write('\nPost-Processors:\n')
             processed_by = sorted(processed_by.items(), reverse=True, key=value_sort)
             for processor, processor_count in processed_by:
